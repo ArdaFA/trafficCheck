@@ -1,6 +1,7 @@
 import subprocess
 import csv
 from scapy.all import rdpcap
+from scapy.layers.l2 import Ether
 
 
 class WireSharkManager:
@@ -32,9 +33,14 @@ class WireSharkManager:
         packets = rdpcap(pcap_file)
 
         for packet in packets:
-            if packet.haslayer('Ether'):
-                devices.add(packet['Ether'].src)
-                devices.add(packet['Ether'].dst)
+            if packet.haslayer(Ether):
+                src = packet[Ether].src
+                dst = packet[Ether].dst
+                # multicasting start with following
+                if not (src.startswith("01:00:5e") or src.startswith("33:33") or src == "ff:ff:ff:ff:ff:ff"):
+                    devices.add(src)
+                if not (dst.startswith("01:00:5e") or dst.startswith("33:33") or dst == "ff:ff:ff:ff:ff:ff"):
+                    devices.add(dst)
 
         return devices
 
@@ -56,5 +62,5 @@ class WireSharkManager:
             self.save_to_csv(devices, csv_file)
 
 
-wireshark_manager = WireSharkManager("wlp2s0", 60, "/home/ardafa/Documents/Wireshark_Data/Home")
+wireshark_manager = WireSharkManager("wlp2s0", 12, "/home/ardafa/Documents/Wireshark_Data/Home")
 wireshark_manager.capture_and_extract()
