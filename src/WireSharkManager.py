@@ -9,7 +9,7 @@ class WireSharkManager:
 
     def run_capture(self):
         # it could be saved as a csv, but it is not readable from human :D
-        output_file = f"{self.output_folder}/sonuclar.csv"
+        output_file = f"{self.output_folder}/results.csv"
         capture_command = [
             "tshark", "-i", self.interface,
             "-a", f"duration:{self.capture_duration}",
